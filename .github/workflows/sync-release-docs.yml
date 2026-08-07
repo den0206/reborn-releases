@@ -1,0 +1,104 @@
+name: Sync release docs
+
+# リリースが公開されたら、このリポジトリの README / CHANGELOG を追従させてコミットする。
+#
+# なぜこのリポジトリに置くか:
+#   Release はソース(Private)側の release.yml が PAT(RELEASES_TOKEN)でここに作る。
+#   GITHUB_TOKEN 以外で作られたリリースは release イベントを発火させるので、この
+#   ワークフローはここで起動できる。必要な材料(タグ・公開日・リリース本文)は全部
+#   このリポジトリ側にあり、Private リポジトリへのアクセスも追加の PAT も要らない。
+#   本番のリリース経路(署名・公証・publish)に手を入れずに済むのも利点で、
+#   ここが失敗してもリリース自体は公開済みのまま残る。
+#
+# 更新するもの:
+#   README.md / README.ja.md  … <!-- BEGIN:latest-release --> の最新版表示
+#   CHANGELOG.md              … <!-- BEGIN:releases --> にタグごとの節を追加
+#
+# CHANGELOG は未知のタグだけを足す。公開後に手で整えた節は次回以降も残る。
+# リリース本文を編集して反映し直したいときは、手動実行(workflow_dispatch)の
+# regenerate にタグを入れる(例: Ver_0.0.2+2)。
+#
+# 追加のシークレットは不要。push はこのリポジトリの GITHUB_TOKEN で行う。
+# GITHUB_TOKEN の push は他のワークフローを起動しないので、自己ループしない。
+
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+    inputs:
+      regenerate:
+        description: 'リリース本文から作り直すタグ(カンマ区切り。空なら未知のタグのみ追加)'
+        required: false
+        default: ''
+
+permissions:
+  contents: write
+
+concurrency:
+  group: sync-release-docs
+  cancel-in-progress: false
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          # release イベントの checkout は既定でタグを指すため、既定ブランチを明示する。
+          ref: ${{ github.event.repository.default_branch }}
+
+      - name: Fetch releases
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          # 公開済みリリースを新しい順に取得する(gh はランナーにプリインストール)。
+          gh release list \
+            --repo "$GITHUB_REPOSITORY" \
+            --limit 200 \
+            --json tagName,publishedAt,isDraft,isPrerelease \
+            > releases-meta.json
+
+          # body は list では取れないのでタグごとに view で足す。
+          python3 - <<'PY'
+          import json, subprocess
+          meta = json.load(open("releases-meta.json"))
+          out = []
+          for r in meta:
+              if r.get("isDraft") or r.get("isPrerelease"):
+                  continue
+              body = subprocess.run(
+                  ["gh", "release", "view", r["tagName"], "--json", "body", "--jq", ".body"],
+                  capture_output=True, text=True, check=True,
+              ).stdout
+              out.append({**r, "body": body})
+          json.dump(out, open("releases.json", "w"), ensure_ascii=False)
+          print(f"{len(out)} releases")
+          PY
+
+      - name: Update docs
+        env:
+          # シェルへ直接展開せず env 経由で渡す(入力値をコマンドとして解釈させない)。
+          REGENERATE: ${{ inputs.regenerate }}
+        run: |
+          ARGS=(releases.json)
+          if [ -n "$REGENERATE" ]; then
+            ARGS+=(--regenerate "$REGENERATE")
+          fi
+          python3 scripts/sync-release-docs.py "${ARGS[@]}"
+
+      - name: Commit
+        env:
+          TAG: ${{ github.event.release.tag_name }}
+        run: |
+          rm -f releases.json releases-meta.json
+          if git diff --quiet; then
+            echo "::notice::差分なし。コミットしません。"
+            exit 0
+          fi
+          git config user.name  "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add README.md README.ja.md CHANGELOG.md
+          git commit -m "docs: リリース ${TAG:-の公開} に合わせて README と CHANGELOG を更新する"
+          # 手動実行が重なった場合に備えて、rebase してから push する。
+          git pull --rebase --autostash origin "$(git rev-parse --abbrev-ref HEAD)"
+          git push
