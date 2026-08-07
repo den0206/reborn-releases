@@ -1,0 +1,34 @@
+name: 機能の要望 / Feature request
+description: あったら嬉しい機能・改善を提案する / Suggest a feature or improvement
+labels: ["enhancement"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Reborn は「ウィンドウ配置の保存・復元とその周辺」に機能を絞っています。
+        タイリング / スナップ、Spaces 間の移動、クラウド同期は対象外です（README の「制限事項」を参照）。
+
+        Reborn deliberately stays limited to saving and restoring window arrangements.
+        Tiling/snapping, moving between Spaces, and cloud sync are out of scope (see "Limitations" in the README).
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: 困っていること / The problem
+      description: どんな場面で不便なのかを書いてください / Describe the situation where you get stuck
+    validations:
+      required: true
+
+  - type: textarea
+    id: proposal
+    attributes:
+      label: 提案 / Proposed solution
+      description: どう動くと嬉しいか / How you would like it to work
+    validations:
+      required: true
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: 代替案・回避策 / Alternatives or workarounds
+      description: 今どうやって回避しているか / What you do today instead
