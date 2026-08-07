@@ -1,0 +1,80 @@
+name: 不具合の報告 / Bug report
+description: 動作しない・意図しない挙動を報告する / Report something that does not work as expected
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        報告ありがとうございます。日本語・英語どちらでも構いません。
+        Thanks for reporting. Japanese or English are both fine.
+
+  - type: textarea
+    id: summary
+    attributes:
+      label: 何が起きましたか / What happened
+      description: 期待した動作と、実際に起きたことを書いてください / Describe what you expected and what actually happened
+    validations:
+      required: true
+
+  - type: textarea
+    id: steps
+    attributes:
+      label: 再現手順 / Steps to reproduce
+      placeholder: |
+        1. 2 台のモニターをつないで配置を保存する
+        2. 外部モニターを外す
+        3. メニューバーからレイアウトを選ぶ
+    validations:
+      required: true
+
+  - type: input
+    id: version
+    attributes:
+      label: Reborn のバージョン / Reborn version
+      description: 設定 >「情報」タブに表示されます / Shown under Settings > "About"
+      placeholder: "0.0.2+2"
+    validations:
+      required: true
+
+  - type: input
+    id: os
+    attributes:
+      label: macOS のバージョン / macOS version
+      placeholder: "macOS 26.1"
+    validations:
+      required: true
+
+  - type: input
+    id: hardware
+    attributes:
+      label: Mac の機種 / Mac model
+      placeholder: "MacBook Pro (M3, 2024)"
+
+  - type: textarea
+    id: displays
+    attributes:
+      label: モニター構成 / Display setup
+      description: 台数・解像度・接続方法など / Number of displays, resolutions, how they are connected
+      placeholder: "内蔵 + Dell U2723QE 2 台（Thunderbolt Dock 経由）"
+
+  - type: input
+    id: apps
+    attributes:
+      label: 関係するアプリ / Apps involved
+      description: 特定のアプリでのみ起きる場合 / If it only happens with certain apps
+      placeholder: "Visual Studio Code, Slack"
+
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: 確認事項 / Checks
+      options:
+        - label: アクセシビリティ権限を許可している / Accessibility permission is granted
+        - label: "`アプリケーション` フォルダから起動している（DMG から直接ではない） / Launched from `Applications` (not directly from the DMG)"
+        - label: 最新のリリースで再現する / Reproduces on the latest release
+
+  - type: textarea
+    id: extra
+    attributes:
+      label: その他 / Anything else
+      description: スクリーンショットや通知の文言があれば貼ってください / Screenshots or the text of any notification are helpful

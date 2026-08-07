@@ -1,0 +1,11 @@
+blank_issues_enabled: true
+contact_links:
+  - name: Usage and troubleshooting (English)
+    url: https://github.com/den0206/reborn-releases#troubleshooting
+    about: Common problems and fixes are covered in the README
+  - name: 使い方・トラブルシューティング（日本語）
+    url: https://github.com/den0206/reborn-releases/blob/main/README.ja.md#トラブルシューティング
+    about: よくある症状と対処は README に載っています
+  - name: ダウンロード / Download
+    url: https://github.com/den0206/reborn-releases/releases/latest
+    about: 最新版の DMG はこちら / Get the latest DMG here
