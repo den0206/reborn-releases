@@ -19,6 +19,23 @@ update check treats as newer than `X.Y.Z`.
 
 <!-- BEGIN:releases -->
 
+## Ver_0.0.3+1 — 2026-08-08
+
+### 変更点
+
+#### 新機能
+- 上書き更新の成否表示と除外候補の隔離を配線する
+
+#### 修正
+- codesign -R の requirement に先頭 = を付ける
+- 許可要求を未決定時の1回に制限する
+- 破損 settings.json を quarantine する
+- ウィンドウ不足を noWindowAvailable として集計する
+
+### 既知の問題
+
+- なし
+
 ## Ver_0.0.3 — 2026-08-08
 
 ### 変更点
