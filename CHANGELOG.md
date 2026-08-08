@@ -14,6 +14,8 @@ update check treats as newer than `X.Y.Z`.
 >
 > 以下のエントリは [`.github/workflows/sync-release-docs.yml`](.github/workflows/sync-release-docs.yml)
 > が自動で維持します。公開されたリリースのノートがそのまま挿入されます。
+> 手元で反映したいときは `./scripts/refresh-docs.sh`（公開リリースを読み取って
+> README・CHANGELOG・Issue テンプレートを更新する。認証不要）。
 
 <!-- BEGIN:releases -->
 
