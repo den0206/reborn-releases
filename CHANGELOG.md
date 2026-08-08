@@ -59,7 +59,7 @@ is always created. Debug builds no longer take over the release build's global s
 
 </details>
 
-## Ver_0.0.2+1 — 2026-08-02
+## Ver_0.0.2+1 — 2026-08-03
 
 ### 追加
 
@@ -95,7 +95,7 @@ cycle in long-lived tasks. Update leftovers are cleaned up and external process 
 
 </details>
 
-## Ver_0.0.2 — 2026-07-26
+## Ver_0.0.2 — 2026-08-02
 
 ### 追加
 
@@ -120,7 +120,7 @@ applies the matching layout. Saving a layout with a duplicate name now appends a
 
 **Full Changelog**: https://github.com/den0206/reborn-releases/commits/Ver_0.0.1+1
 
-## Ver_0.0.1 — 2026-07-26
+## Ver_0.0.1 — 2026-08-01
 
 最初の公開リリース。
 

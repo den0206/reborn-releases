@@ -32,7 +32,10 @@ body:
     attributes:
       label: Reborn のバージョン / Reborn version
       description: 設定 >「情報」タブに表示されます / Shown under Settings > "About"
-      placeholder: "0.0.2+2"
+      # 記入例は最新版に追従させる(sync-release-docs.yml)。手で書き換えないこと。
+      # BEGIN:latest-version
+      placeholder: "0.0.3"
+      # END:latest-version
     validations:
       required: true
 

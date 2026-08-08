@@ -8,9 +8,20 @@
 
 <releases.json> は `gh release list --json tagName,publishedAt,isDraft,isPrerelease,body` の出力。
 
-書き換える箇所:
-  - README.md / README.ja.md の <!-- BEGIN:latest-release --> ブロック(最新版と公開日)
+書き換える箇所(MARKER_TARGETS と CHANGELOG):
+  - README.md / README.ja.md の latest-release ブロック(最新版と公開日)
+  - README.md / README.ja.md の release-badge ブロック(Release バッジ)
+  - .github/ISSUE_TEMPLATE/bug_report.yml の latest-version ブロック(記入例)
   - CHANGELOG.md の <!-- BEGIN:releases --> ブロック(タグごとの節を新しい順に並べる)
+
+**版に依存する文言は必ずマーカーの内側に置くこと。** マーカーの外にベタ書きすると
+リリースのたびに古いまま取り残される(実際に Issue テンプレートの記入例と
+Release バッジで発生した)。新しい箇所を足すときは MARKER_TARGETS に 1 行加える。
+
+Release バッジを shields の動的エンドポイント(github/v/release)ではなく、版を URL に
+埋めた静的バッジにしているのはそのため。動的バッジは URL が変わらないので、GitHub の
+画像プロキシ(camo)が古い画像を掴んだままになり、リリース後も旧版を表示し続ける。
+版が URL に入っていれば別画像として扱われ、キャッシュに関係なく必ず新しくなる。
 
 CHANGELOG は**未知のタグだけ**を描画して足す。既にある節は触らないので、公開後に手で
 整えた文面が次回の実行で消えることはない。リリース本文を編集し直して反映したいときだけ
@@ -24,12 +35,13 @@ import re
 import sys
 from datetime import datetime, timezone
 from pathlib import Path
+from urllib.parse import quote
 
 ROOT = Path(__file__).resolve().parent.parent
 REPO = "den0206/reborn-releases"
+BADGE_COLOR = "2f7bff"
+BADGE_LABEL_COLOR = "111111"
 
-LATEST_BEGIN = "<!-- BEGIN:latest-release -->"
-LATEST_END = "<!-- END:latest-release -->"
 RELEASES_BEGIN = "<!-- BEGIN:releases -->"
 RELEASES_END = "<!-- END:releases -->"
 
@@ -122,33 +134,84 @@ def split_sections(block: str, known_tags: "set[str] | None" = None) -> "dict[st
     return sections
 
 
-def update_readmes(latest: dict) -> "list[str]":
-    version = version_of(latest["tagName"])
+def shields_escape(text: str) -> str:
+    """shields.io の静的バッジに載せる文字列をエスケープする。
+
+    パスの区切りが `-`、空白が `_` なので、リテラルはそれぞれ二重にする。
+    そのうえで URL エンコードする(`Ver_0.0.2+2` の `+` が空白扱いにならないよう)。
+    """
+    return quote(text.replace("-", "--").replace("_", "__"), safe="")
+
+
+def release_badge(tag: str, alt: str) -> str:
+    """版を URL に埋めた静的 Release バッジ(camo キャッシュに勝つため)。"""
+    return (
+        f'\n  <a href="https://github.com/{REPO}/releases/latest">'
+        f'<img alt="{alt}" src="https://img.shields.io/badge/'
+        f"Release-{shields_escape(tag)}-{BADGE_COLOR}"
+        f'?style=flat-square&labelColor={BADGE_LABEL_COLOR}"></a>\n  '
+    )
+
+
+def marker_targets(latest: dict) -> "list[tuple[str, str, str, str]]":
+    """(ファイル, BEGIN マーカー, END マーカー, 差し込む内容) の一覧。
+
+    版に依存する表示を増やすときは、ここに 1 行足してファイル側にマーカーを置く。
+    """
+    tag = latest["tagName"]
+    version = version_of(tag)
     date = published_date(latest)
-    blocks = {
-        "README.md": (
-            '\n<p align="center">\n'
+
+    def md(name: str) -> "tuple[str, str]":
+        return (f"<!-- BEGIN:{name} -->", f"<!-- END:{name} -->")
+
+    def yml(name: str) -> "tuple[str, str]":
+        return (f"# BEGIN:{name}", f"# END:{name}")
+
+    targets = []
+    for readme, line in (
+        (
+            "README.md",
             f"  Latest release: <strong>{version}</strong>"
-            + (f" (released {date})" if date else "")
-            + "\n</p>\n"
+            + (f" (released {date})" if date else ""),
         ),
-        "README.ja.md": (
-            '\n<p align="center">\n'
+        (
+            "README.ja.md",
             f"  最新版: <strong>{version}</strong>"
-            + (f"（{date} 公開）" if date else "")
-            + "\n</p>\n"
+            + (f"（{date} 公開）" if date else ""),
         ),
-    }
-    changed = []
-    for name, block in blocks.items():
+    ):
+        begin, end = md("latest-release")
+        targets.append(
+            (readme, begin, end, f'\n<p align="center">\n{line}\n</p>\n')
+        )
+        begin, end = md("release-badge")
+        targets.append((readme, begin, end, release_badge(tag, "Latest release")))
+
+    begin, end = yml("latest-version")
+    targets.append(
+        (
+            ".github/ISSUE_TEMPLATE/bug_report.yml",
+            begin,
+            end,
+            f'\n      placeholder: "{version}"\n      ',
+        )
+    )
+    return targets
+
+
+def update_markers(latest: dict) -> "list[str]":
+    changed: list[str] = []
+    for name, begin, end, block in marker_targets(latest):
         path = ROOT / name
         if not path.exists():
             fail(f"{name} が見つかりません")
         before = path.read_text(encoding="utf-8")
-        after = replace_block(before, LATEST_BEGIN, LATEST_END, block, name)
+        after = replace_block(before, begin, end, block, name)
         if after != before:
             path.write_text(after, encoding="utf-8")
-            changed.append(name)
+            if name not in changed:
+                changed.append(name)
     return changed
 
 
@@ -208,7 +271,7 @@ def main() -> None:
     # gh は新しい順で返すが、依存せず publishedAt の降順に並べ直す。
     releases.sort(key=lambda r: r.get("publishedAt") or "", reverse=True)
 
-    changed = update_readmes(releases[0]) + update_changelog(releases, regenerate)
+    changed = update_markers(releases[0]) + update_changelog(releases, regenerate)
     if changed:
         print(f"::notice::更新: {', '.join(changed)}")
     else:

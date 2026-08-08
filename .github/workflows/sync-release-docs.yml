@@ -10,13 +10,19 @@ name: Sync release docs
 #   本番のリリース経路(署名・公証・publish)に手を入れずに済むのも利点で、
 #   ここが失敗してもリリース自体は公開済みのまま残る。
 #
-# 更新するもの:
-#   README.md / README.ja.md  … <!-- BEGIN:latest-release --> の最新版表示
-#   CHANGELOG.md              … <!-- BEGIN:releases --> にタグごとの節を追加
+# 更新するもの(正は scripts/sync-release-docs.py の MARKER_TARGETS):
+#   README.md / README.ja.md          … latest-release(最新版表示)と release-badge
+#   .github/ISSUE_TEMPLATE/bug_report … latest-version(バージョン欄の記入例)
+#   CHANGELOG.md                      … releases にタグごとの節を追加
+#
+# **版に依存する文言は必ずマーカーの内側に置くこと。** 外にベタ書きするとリリースの
+# たびに古いまま取り残される。Release バッジを shields の動的エンドポイントではなく
+# 版を URL に埋めた静的バッジにしているのも同じ理由で、URL が変わらないと GitHub の
+# 画像プロキシ(camo)が古い画像を掴んだままになり、更新しても旧版が表示され続ける。
 #
 # CHANGELOG は未知のタグだけを足す。公開後に手で整えた節は次回以降も残る。
 # リリース本文を編集して反映し直したいときは、手動実行(workflow_dispatch)の
-# regenerate にタグを入れる(例: Ver_0.0.2+2)。
+# regenerate にタグを入れる(書式: Ver_X.Y.Z / Ver_X.Y.Z+N)。
 #
 # 追加のシークレットは不要。push はこのリポジトリの GITHUB_TOKEN で行う。
 # GITHUB_TOKEN の push は他のワークフローを起動しないので、自己ループしない。
@@ -91,14 +97,20 @@ jobs:
           TAG: ${{ github.event.release.tag_name }}
         run: |
           rm -f releases.json releases-meta.json
-          if git diff --quiet; then
+          # 追跡ファイルの変更を全部拾う。ファイル名を列挙すると、更新対象を
+          # 増やしたときにここへの追記を忘れて黙って取りこぼす(実際に Issue
+          # テンプレートの記入例で起きかけた)。書き換えるのは sync-release-docs.py
+          # だけなので、-u で足りる。
+          git add -u
+          if git diff --cached --quiet; then
             echo "::notice::差分なし。コミットしません。"
             exit 0
           fi
+          echo "更新されたファイル:"
+          git diff --cached --name-only
           git config user.name  "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add README.md README.ja.md CHANGELOG.md
-          git commit -m "docs: リリース ${TAG:-の公開} に合わせて README と CHANGELOG を更新する"
+          git commit -m "docs: リリース ${TAG:-の公開} に合わせてドキュメントを更新する"
           # 手動実行が重なった場合に備えて、rebase してから push する。
           git pull --rebase --autostash origin "$(git rev-parse --abbrev-ref HEAD)"
           git push
