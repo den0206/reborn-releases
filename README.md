@@ -28,7 +28,7 @@
 
 <!-- BEGIN:latest-release -->
 <p align="center">
-  Latest release: <strong>0.0.2+2</strong> (released 2026-08-07)
+  Latest release: <strong>0.0.3</strong> (released 2026-08-08)
 </p>
 <!-- END:latest-release -->
 

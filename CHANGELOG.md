@@ -17,6 +17,22 @@ update check treats as newer than `X.Y.Z`.
 
 <!-- BEGIN:releases -->
 
+## Ver_0.0.3 — 2026-08-08
+
+### 変更点
+
+#### 新機能
+- 上書き更新の成否表示と除外候補の隔離を配線する
+
+#### 修正
+- 許可要求を未決定時の1回に制限する
+- 破損 settings.json を quarantine する
+- ウィンドウ不足を noWindowAvailable として集計する
+
+### 既知の問題
+
+- なし
+
 ## Ver_0.0.2+2 — 2026-08-07
 
 ### 追加
@@ -95,6 +111,14 @@ selection. Auto restore: consolidated into a single setting that detects display
 applies the matching layout. Saving a layout with a duplicate name now appends a number to keep names unique.
 
 </details>
+
+## Ver_0.0.1+2 — 2026-08-01
+
+**Full Changelog**: https://github.com/den0206/reborn-releases/commits/Ver_0.0.1+2
+
+## Ver_0.0.1+1 — 2026-08-01
+
+**Full Changelog**: https://github.com/den0206/reborn-releases/commits/Ver_0.0.1+1
 
 ## Ver_0.0.1 — 2026-07-26
 

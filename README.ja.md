@@ -28,7 +28,7 @@
 
 <!-- BEGIN:latest-release -->
 <p align="center">
-  最新版: <strong>0.0.2+2</strong>（2026-08-07 公開）
+  最新版: <strong>0.0.3</strong>（2026-08-08 公開）
 </p>
 <!-- END:latest-release -->
 
