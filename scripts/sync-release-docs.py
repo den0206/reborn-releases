@@ -1,12 +1,15 @@
 #!/usr/bin/env python3
 """公開済みリリースに合わせて README / CHANGELOG を書き換える。
 
-`.github/workflows/sync-release-docs.yml` から呼ばれる。標準ライブラリのみ・通信なし
-(リリース情報は gh CLI が取得して JSON で渡す)。
+通常は `scripts/refresh-docs.sh` 経由で呼ぶ(リリース情報の取得もそちらが行う)。
+このファイル自体は標準ライブラリのみ・通信なしで、渡された JSON だけを見る。
 
-    scripts/sync-release-docs.py <releases.json> [--regenerate TAG[,TAG...]]
+    scripts/refresh-docs.sh [--regenerate TAG[,TAG...]]          ← 普段はこちら
+    scripts/sync-release-docs.py <releases.json> [--regenerate …] ← 取得済みの JSON から
 
-<releases.json> は `gh release list --json tagName,publishedAt,isDraft,isPrerelease,body` の出力。
+<releases.json> は GitHub の REST(`/repos/…/releases`)でも gh CLI の
+`gh release list --json tagName,publishedAt,isDraft,isPrerelease,body` でもよい。
+どちらのキー名でも読めるよう normalize() で吸収する。
 
 書き換える箇所(MARKER_TARGETS と CHANGELOG):
   - README.md / README.ja.md の latest-release ブロック(最新版と公開日)
@@ -58,6 +61,17 @@ def replace_block(text: str, begin: str, end: str, body: str, name: str) -> str:
     if start == -1 or stop == -1 or stop < start:
         fail(f"{name} に {begin} / {end} のマーカーが揃っていません")
     return text[: start + len(begin)] + body + text[stop:]
+
+
+def normalize(raw: dict) -> dict:
+    """REST(`tag_name`/`published_at`/`draft`)と gh CLI(`tagName`/…)の差を吸収する。"""
+    return {
+        "tagName": raw.get("tagName") or raw.get("tag_name") or "",
+        "publishedAt": raw.get("publishedAt") or raw.get("published_at") or "",
+        "isDraft": bool(raw.get("isDraft", raw.get("draft", False))),
+        "isPrerelease": bool(raw.get("isPrerelease", raw.get("prerelease", False))),
+        "body": raw.get("body") or "",
+    }
 
 
 def published_date(release: dict) -> str:
@@ -262,8 +276,14 @@ def main() -> None:
             "[--regenerate TAG[,TAG...]]"
         )
 
-    releases = json.loads(Path(args[0]).read_text(encoding="utf-8"))
-    releases = [r for r in releases if not r.get("isDraft") and not r.get("isPrerelease")]
+    raw = json.loads(Path(args[0]).read_text(encoding="utf-8"))
+    if not isinstance(raw, list):
+        fail(f"{args[0]} がリリースの配列ではありません")
+    releases = [normalize(r) for r in raw]
+    missing = [r for r in releases if not r["tagName"]]
+    if missing:
+        fail(f"tagName / tag_name の無いリリースが {len(missing)} 件あります")
+    releases = [r for r in releases if not r["isDraft"] and not r["isPrerelease"]]
     if not releases:
         print("::notice::公開済みリリースがありません。何もしません。")
         return
