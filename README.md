@@ -14,7 +14,9 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/den0206/reborn-releases/releases/latest"><img alt="Latest release" src="https://img.shields.io/github/v/release/den0206/reborn-releases?style=flat-square&label=Release&labelColor=111111&color=2f7bff"></a>
+  <!-- BEGIN:release-badge -->
+  <a href="https://github.com/den0206/reborn-releases/releases/latest"><img alt="Latest release" src="https://img.shields.io/badge/Release-Ver__0.0.3-2f7bff?style=flat-square&labelColor=111111"></a>
+  <!-- END:release-badge -->
   <img alt="macOS 26+" src="https://img.shields.io/badge/macOS-26%2B-2f7bff?style=flat-square&labelColor=111111">
   <img alt="Universal Binary" src="https://img.shields.io/badge/Universal-Apple%20Silicon%20%2F%20Intel-2f7bff?style=flat-square&labelColor=111111">
   <img alt="Swift 6" src="https://img.shields.io/badge/Swift-6-2f7bff?style=flat-square&labelColor=111111">
