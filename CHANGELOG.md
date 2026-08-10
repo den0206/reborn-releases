@@ -19,6 +19,17 @@ update check treats as newer than `X.Y.Z`.
 
 <!-- BEGIN:releases -->
 
+## Ver_0.0.4 — 2026-08-10
+
+### 変更点
+
+#### 新機能
+- 全アプリ終了(F-20)を追加し popover の Liquid Glass 入れ子を解消
+
+### 既知の問題
+
+- なし
+
 ## Ver_0.0.3+1 — 2026-08-08
 
 ### 変更点
