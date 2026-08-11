@@ -34,7 +34,7 @@ body:
       description: 設定 >「情報」タブに表示されます / Shown under Settings > "About"
       # 記入例は最新版に追従させる(sync-release-docs.yml)。手で書き換えないこと。
       # BEGIN:latest-version
-      placeholder: "0.0.4"
+      placeholder: "0.0.5"
       # END:latest-version
     validations:
       required: true

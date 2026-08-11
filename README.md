@@ -15,7 +15,7 @@
 
 <p align="center">
   <!-- BEGIN:release-badge -->
-  <a href="https://github.com/den0206/reborn-releases/releases/latest"><img alt="Latest release" src="https://img.shields.io/badge/Release-Ver__0.0.4-2f7bff?style=flat-square&labelColor=111111"></a>
+  <a href="https://github.com/den0206/reborn-releases/releases/latest"><img alt="Latest release" src="https://img.shields.io/badge/Release-Ver__0.0.5-2f7bff?style=flat-square&labelColor=111111"></a>
   <!-- END:release-badge -->
   <img alt="macOS 26+" src="https://img.shields.io/badge/macOS-26%2B-2f7bff?style=flat-square&labelColor=111111">
   <img alt="Universal Binary" src="https://img.shields.io/badge/Universal-Apple%20Silicon%20%2F%20Intel-2f7bff?style=flat-square&labelColor=111111">
@@ -30,7 +30,7 @@
 
 <!-- BEGIN:latest-release -->
 <p align="center">
-  Latest release: <strong>0.0.4</strong> (released 2026-08-10)
+  Latest release: <strong>0.0.5</strong> (released 2026-08-11)
 </p>
 <!-- END:latest-release -->
 
