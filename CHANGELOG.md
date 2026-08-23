@@ -19,6 +19,44 @@ update check treats as newer than `X.Y.Z`.
 
 <!-- BEGIN:releases -->
 
+## Ver_0.1.0 — 2026-08-23
+
+### Added
+
+- Windows of applications that have no `.app` bundle can be saved and restored. A bare
+  executable such as the Android Emulator (`qemu-system-aarch64`) has no bundle identifier,
+  so it used to be invisible to matching; it is now identified by the absolute path of its
+  executable. The Android Emulator also starts on restore when it is not running, so a
+  layout that includes it comes back whole
+- The popover rows show an application icon column, and hovering a layout brings up a
+  miniature of its placement so the right one can be picked without opening Settings
+
+### Fixed
+
+- Restoring a layout that mixes minimized and visible windows no longer moves the wrong
+  window. Minimizing changes which windows the Accessibility API reports, so the indices
+  captured before the change no longer pointed at the same windows; minimize/unminimize is
+  now a second pass over freshly resolved windows. Failures to apply are also counted as
+  skips instead of being swallowed
+- The temporary directory used to relaunch after moving the application to `/Applications`
+  (F-18) is cleaned up on the next launch when the helper is killed before it can remove it
+
+### Security
+
+- Importing a layout (F-10) drops the windows that are identified by the path to an
+  executable rather than by a bundle identifier. Restoring such a window can start the
+  program that path points at, and an imported file is written by someone else, so a shared
+  layout could otherwise choose which binary gets run. The paths are specific to the machine
+  that produced them and cannot be matched on another one, so nothing usable is lost, and the
+  import reports how many windows it left out rather than shrinking the layout silently
+- The helper that installs a downloaded update re-checks the Team ID immediately before
+  replacing the application, not just that the signature is intact. Verifying only integrity
+  would have accepted a substitution with a different, validly signed application
+- Application identifiers are no longer written to the system log in the clear. For an
+  application with no bundle (F-21) the identifier is the path to its executable, which
+  reveals both the home directory layout and which programs are in use; it is now marked
+  private, as the same value already was elsewhere
+
 ## Ver_0.0.5 — 2026-08-11
 
 ### 変更点
