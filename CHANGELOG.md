@@ -19,6 +19,28 @@ update check treats as newer than `X.Y.Z`.
 
 <!-- BEGIN:releases -->
 
+## Ver_0.2.0 — 2026-09-04
+
+### Added
+
+- The permission step of onboarding can now show a floating panel that follows the System
+  Settings window, letting Reborn be dragged straight into the Accessibility list. It
+  appears only if the permission is still not granted eight seconds after “Open System
+  Settings” is pressed, and a link on the same step opens it on demand. This is a fallback
+  for when Reborn's row never shows up in the list — the existing prompt-and-toggle route
+  is unchanged and still completes onboarding on its own
+- A layout's application chips in Settings now carry a remove button, so a single
+  application can be dropped from a saved layout without recapturing it. Useful for an
+  application that happened to be open when the layout was saved, or one that is no longer
+  installed. The last remaining application cannot be removed — delete the layout instead
+
+### Changed
+
+- Applications that a layout still refers to but that are no longer installed are now
+  labelled “(not installed)” wherever the layout lists its applications, instead of showing
+  a raw bundle identifier. Such windows were already skipped on restore, but nothing said
+  why
+
 ## Ver_0.1.0 — 2026-08-23
 
 ### Added
