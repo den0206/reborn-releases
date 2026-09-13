@@ -19,6 +19,15 @@ update check treats as newer than `X.Y.Z`.
 
 <!-- BEGIN:releases -->
 
+## Ver_0.2.1 — 2026-09-13
+
+### Changed
+
+- Finder is no longer protected from quitting. "Quit all apps" (F-20) and clean restore
+  (F-16) now quit Finder like any other application; add `com.apple.finder` to the
+  exclusion list to keep it running. Quitting Finder clears the desktop icons until
+  Finder is opened again from the Dock.
+
 ## Ver_0.2.0 — 2026-09-04
 
 ### Added
