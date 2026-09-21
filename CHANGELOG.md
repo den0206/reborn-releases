@@ -19,6 +19,19 @@ update check treats as newer than `X.Y.Z`.
 
 <!-- BEGIN:releases -->
 
+## Ver_0.2.2 — 2026-09-21
+
+### Fixed
+
+- Restoring layouts with multiple windows of the same app now opens missing windows
+  through the app's English or Japanese New Window menu when launching missing apps is
+  enabled. This also works when the app is already running; closed tabs and document
+  contents are not restored.
+- Restoring multiple Android Emulator devices using the same executable now launches
+  each missing AVD and matches devices by name even when their ports change. Other
+  applications now wait for all saved windows to appear within the existing timeout,
+  instead of stopping as soon as the first window appears.
+
 ## Ver_0.2.1 — 2026-09-13
 
 ### Changed
