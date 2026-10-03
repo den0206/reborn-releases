@@ -104,6 +104,17 @@ There is no Dock icon. Reborn never polls while idle; it is designed for 0% idle
 > separate row per release under Login Items and "Allow in the Menu Bar" — and in-app updates will not work.
 > Reborn detects this at launch and offers to move itself into `Applications`.
 
+### Install with Homebrew
+
+```bash
+brew tap den0206/reborn https://github.com/den0206/reborn-releases
+brew install --cask reborn
+```
+
+The cask installs the same signed and notarized `Reborn.app` into `/Applications`, so nothing about
+first launch, permissions, or in-app updates changes. Two commands are needed because this repository
+is the tap itself; `brew tap` has to be told where it lives.
+
 ### First Launch
 
 An onboarding window appears and asks for **Accessibility permission**.
@@ -286,6 +297,10 @@ When a newer version is found:
 
 Network access is restricted to `github.com` and `*.githubusercontent.com`.
 
+Installed with Homebrew? Reborn updates itself, so `brew upgrade` leaves it alone by design — otherwise
+brew would overwrite the version you just updated to. Use the in-app updater, or update from brew
+explicitly with `brew upgrade --cask --greedy reborn`.
+
 ## Uninstall
 
 A macOS app cannot detect that it has been dragged to the Trash. So simply trashing `Reborn.app`
@@ -300,6 +315,10 @@ Use Settings > "About" → "**Uninstall Reborn…**" instead. It performs the cl
 
 > **Accessibility permission cannot be removed by the app** — macOS provides no API for it.
 > Remove the Reborn entry manually under "System Settings > Privacy & Security > Accessibility".
+
+If you installed with Homebrew, run the in-app uninstaller **first** — `brew uninstall` cannot
+unregister the login item, because macOS offers no API for that. Then clear brew's own record with
+`brew uninstall --cask --zap reborn`.
 
 If you want to clean up by hand, the data lives at:
 
@@ -352,7 +371,8 @@ Things Reborn **deliberately does not do**, plus its current constraints.
 - **Full-screen windows are not touched.** They are recorded but skipped on restore. The same applies to Stage Manager.
 - **Some apps cannot be controlled.** Certain Electron- and Java-based apps do not respond to the Accessibility API.
   Those windows are skipped and reported in the restore summary.
-- **Not available on the Mac App Store** (App Sandbox is incompatible). Distribution is by DMG only.
+- **Not available on the Mac App Store** (App Sandbox is incompatible). Distribution is by DMG, either
+  downloaded here or installed through Homebrew.
 - Up to **20 layouts** can be saved (by design — Reborn stays minimal).
 - Clean restore does not combine with shortcuts. Shortcut and auto-restore paths cannot show a confirmation
   UI, so they always perform a normal restore.
