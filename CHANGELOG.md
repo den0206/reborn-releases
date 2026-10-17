@@ -19,6 +19,16 @@ update check treats as newer than `X.Y.Z`.
 
 <!-- BEGIN:releases -->
 
+## Ver_0.3.0 — 2026-10-17
+
+### Changed
+
+- Release builds now require signing and notarization using Xkeys-exported secrets and an App Store Connect API key.
+
+- The menu bar popover now aligns its action rows with the layout list and highlights
+  them on hover, and drops one divider.
+- The Info tab in Settings now uses the same grouped form as the other tabs.
+
 ## Ver_0.2.2 — 2026-09-21
 
 ### Fixed
