@@ -19,6 +19,14 @@ update check treats as newer than `X.Y.Z`.
 
 <!-- BEGIN:releases -->
 
+## Ver_0.4.0 — 2026-11-14
+
+### Added
+
+- A "Prevent Sleep" toggle in the menu bar popover keeps the Mac from sleeping while idle
+  (like `caffeinate -i`). While it is on, the menu bar icon shows a green dot.
+  It resets to off on every launch and does not stop lid-close sleep.
+
 ## Ver_0.3.0 — 2026-10-17
 
 ### Changed
